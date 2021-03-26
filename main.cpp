@@ -269,7 +269,7 @@ void printCharList(std::vector<std::vector<char>> tcl) { // made for 2000x2000 i
 
 	int truey = 1;
 
-	for (int i = 2; i < 18; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
+	for (int i = 2; i < 36; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
 
 		tmpyratio = ratioy % i;w
 		tmpyratio2 = ratiox % i;
@@ -286,7 +286,7 @@ void printCharList(std::vector<std::vector<char>> tcl) { // made for 2000x2000 i
 
 	for (int i = 0; i < tcl.size(); i+= ratioy) {
 		for (int z = 0; z < tcl[0].size(); z+= ratiox) {
-			std::cout << (tcl[i][z]);
+			std::cout << (tcl[i][z])<<" ";
 		}
 		std::cout<<("\n");
 
