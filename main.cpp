@@ -271,7 +271,7 @@ void printCharList(std::vector<std::vector<char>> tcl) { // made for 2000x2000 i
 
 	for (int i = 2; i < 36; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
 
-		tmpyratio = ratioy % i;w
+		tmpyratio = ratioy % i;
 		tmpyratio2 = ratiox % i;
 
 		if (tmpyratio % 1 == 0 && tmpyratio2 % 1 == 0) { //decimal checker -- too big if not these ratios
@@ -286,9 +286,9 @@ void printCharList(std::vector<std::vector<char>> tcl) { // made for 2000x2000 i
 
 	for (int i = 0; i < tcl.size(); i+= ratioy) {
 		for (int z = 0; z < tcl[0].size(); z+= ratiox) {
-			std::cout << (tcl[i][z])<<" ";
+			printf("%c ",tcl[i][z]);
 		}
-		std::cout<<("\n");
+		printf("\n");
 
 	
 	}
@@ -524,7 +524,7 @@ void loadManyImages() {
 		
 		printCharList(ffmpeg.charArr[z]);
 		Sleep(100);
-		std::cout << ("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	}
 }
 
