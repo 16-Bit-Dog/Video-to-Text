@@ -278,7 +278,7 @@ void printCharList(std::vector<std::vector<char>> tcl, std::vector<std::vector<R
 
 	int truey = 1;
 
-	for (int i = 2; i < 15; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
+	for (int i = 2; i < GLOBALSCALE; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
 
 		tmpyratio = ratioy % i;
 		tmpyratio2 = ratiox % i;
@@ -329,7 +329,7 @@ void printCharListRGB(std::vector<std::vector<char>> tcl, std::vector<std::vecto
 
 	int truey = 1;
 
-	for (int i = 2; i < printCharListRGB; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
+	for (int i = 2; i < GLOBALSCALE; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
 
 		tmpyratio = ratioy % i;
 		tmpyratio2 = ratiox % i;
@@ -448,6 +448,9 @@ void NOTVID() {
 	//volatile auto a = decltype(&img.byteBufferProper);
 
 	//img.byteBufferProper = texManage(img.byteBufferProper);
+
+	std::cout << "\n one last thing; enter the scale for the video - 10 is VERY BIG, 15 is large (good for a 15inch 1080p screen laptop), 20 is the smallest I would make to render detail on a colored video";
+	std::cin >> GLOBALSCALE;
 
 	img.charArr = linearText(img.byteBufferProper);
 
