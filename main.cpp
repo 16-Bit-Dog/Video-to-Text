@@ -15,7 +15,7 @@
 #include <string>
 #define WIN32_LEAN_AND_MEAN 
 
-
+int GLOBALSCALE;
 HANDLE hConsole;
 CONSOLE_SCREEN_BUFFER_INFOEX info;
 CONSOLE_FONT_INFOEX CFI;
@@ -26,18 +26,18 @@ CONSOLE_FONT_INFOEX CFI;
 //this is a rasterizer of a image program
 struct RGBA {
 
-	float r;
-	float g;
-	float b;
-	float a;
+	int r;
+	int g;
+	int b;
+	int a;
 
 
 }colorBase;
 
 struct RGB {
-	float r;
-	float g;
-	float b;
+	int r;
+	int g;
+	int b;
 }colorBase2;
 
 std::vector<std::vector<RGBA>> texManage(std::vector < std::vector<RGBA>> vec);
@@ -130,40 +130,8 @@ void LoadFfm() { //run asyncronously to allow program to run while things run
 
 }
 
-void SetColor(char c, RGBA rgb) {
-	//system("cls"); <-- clears console window
-	
-	info.ColorTable[7] = RGB(rgb.r, rgb.g,rgb.b);
-	
-	info.srWindow = SMALL_RECT(0,0,720,720);
-	//info.dwSize = COORD(720, 720);
-	
-	//std::cout << ""<<std::endl;
-	//printf("\n"); <-- this works...
-	//printf("\n"); //fixes SetConsoleScreenBufferInfoEx
-	SetConsoleTextAttribute(hConsole, 7);
 
 
-	(SetConsoleScreenBufferInfoEx(hConsole, &info));
-}
-
-void SetColorRGB(char c, RGB rgb) {
-	//system("cls"); <-- clears console window
-
-	info.ColorTable[7] = RGB(rgb.r, rgb.g, rgb.b);
-
-	info.srWindow = SMALL_RECT(0, 0, 720, 720);
-	//info.dwSize = COORD(720, 720);
-
-	//std::cout << ""<<std::endl;
-	//printf("\n"); <-- this works...
-	//printf("\n"); //fixes SetConsoleScreenBufferInfoEx
-	SetConsoleTextAttribute(hConsole, 7);
-
-
-	(SetConsoleScreenBufferInfoEx(hConsole, &info));
-	
-}
 
 std::vector<std::vector<char>> linearText(std::vector<std::vector<RGBA>> pDat) { //avx goes burr
 	std::vector<std::vector<char>> charList(pDat.size());
@@ -310,7 +278,7 @@ void printCharList(std::vector<std::vector<char>> tcl, std::vector<std::vector<R
 
 	int truey = 1;
 
-	for (int i = 2; i < 20; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
+	for (int i = 2; i < 15; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
 
 		tmpyratio = ratioy % i;
 		tmpyratio2 = ratiox % i;
@@ -333,17 +301,18 @@ void printCharList(std::vector<std::vector<char>> tcl, std::vector<std::vector<R
 	std::wcscpy(CFI.FaceName, L"Consolas"); // Choose your font
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
 
+	info.srWindow = SMALL_RECT(0, 0, 720, 720);
+	(SetConsoleScreenBufferInfoEx(hConsole, &info));
 
-	for (int i = 0; i < tcl.size(); i+= ratioy) {
+
+//	int XMS;
+	for (int i = 0; i < tcl.size(); i += ratioy) {
+
 		for (int z = 0; z < tcl[0].size(); z += ratiox) {
 
-		//	SetColor(tcl[i][z], rgb[i][z]);
-			//WriteConsoleA(hConsole, (void*)&tcl[i][z],1,NULL, NULL);
-			printf("%c", tcl[i][z]);
+			printf("\x1B[48;5;%d;%d;%dm%c", rgb[i][z].r, rgb[i][z].g, rgb[i][z].b, tcl[i][z]);
 		}
-		printf("\n");
-
-	
+		printf("\x1B[40m\n"); //\x1b[1B
 	}
 
 }
@@ -360,7 +329,7 @@ void printCharListRGB(std::vector<std::vector<char>> tcl, std::vector<std::vecto
 
 	int truey = 1;
 
-	for (int i = 2; i < 20; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
+	for (int i = 2; i < printCharListRGB; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
 
 		tmpyratio = ratioy % i;
 		tmpyratio2 = ratiox % i;
@@ -385,14 +354,18 @@ void printCharListRGB(std::vector<std::vector<char>> tcl, std::vector<std::vecto
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
 
 
+	info.srWindow = SMALL_RECT(0, 0, 720, 720);
+	(SetConsoleScreenBufferInfoEx(hConsole, &info));
+
+
+	//	int XMS;
 	for (int i = 0; i < tcl.size(); i += ratioy) {
+
 		for (int z = 0; z < tcl[0].size(); z += ratiox) {
-		//	SetColorRGB(tcl[i][z], rgb[i][z]);
-			printf("%c", tcl[i][z]);
+
+			printf("\x1B[48;5;%d;%d;%dm%c", rgb[i][z].r, rgb[i][z].g, rgb[i][z].b, tcl[i][z]);
 		}
-		printf("\n");
-
-
+		printf("\x1B[40m\n"); //\x1b[1B
 	}
 
 }
@@ -543,6 +516,9 @@ void loadManyImages() {
 	ffmpeg.byteBufferProper.resize(imgC);
 	ffmpeg.charArr.resize(imgC);
 
+	std::cout << "\n one last thing; enter the scale for the video - 10 is VERY BIG, 15 is large (good for a 15inch 1080p screen laptop), 20 is the smallest I would make to render detail on a colored video";
+	std::cin >> GLOBALSCALE;
+
 	std::cout << "processing.\n";
 	for (int z = 0; z < imgC; z++) {
 		std::cout << "Parsing image:" << z <<"\n";
@@ -634,7 +610,7 @@ int main() {
 	DWORD thing;
 	GetConsoleMode(hConsole, &thing);
 	
-	//SetConsoleMode(hConsole, thing | ENABLE_VIRTUAL_TERMINAL_PROCESSING | ENABLE_LVB_GRID_WORLDWIDE | ENABLE_VIRTUAL_TERMINAL_INPUT);
+	SetConsoleMode(hConsole, thing | ENABLE_VIRTUAL_TERMINAL_PROCESSING | ENABLE_VIRTUAL_TERMINAL_INPUT);
 	info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);//ENABLE_VIRTUAL_TERMINAL_INPUT
 
 	info.dwSize = COORD(1, 0);
