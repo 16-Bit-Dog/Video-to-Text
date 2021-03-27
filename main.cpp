@@ -2,6 +2,8 @@
 //Ariel G
 //Exists to do some thing I needed to be done
 //////////////////////
+ 
+// CREDIT to Tapio Vierros and his amazing console API named rlutil
 
 #pragma comment (lib, "windowscodecs.lib")
 
@@ -13,6 +15,10 @@
 #include <string>
 #define WIN32_LEAN_AND_MEAN 
 
+
+HANDLE hConsole;
+CONSOLE_SCREEN_BUFFER_INFOEX info;
+CONSOLE_FONT_INFOEX CFI;
 
 //program requries AVX because I felt like it may do something - need to test
 //requires CUDA enabled GPU - no idea what sm because still working on project
@@ -122,6 +128,41 @@ void LoadFfm() { //run asyncronously to allow program to run while things run
 		}
 	}
 
+}
+
+void SetColor(char c, RGBA rgb) {
+	//system("cls"); <-- clears console window
+	
+	info.ColorTable[7] = RGB(rgb.r, rgb.g,rgb.b);
+	
+	info.srWindow = SMALL_RECT(0,0,720,720);
+	//info.dwSize = COORD(720, 720);
+	
+	//std::cout << ""<<std::endl;
+	//printf("\n"); <-- this works...
+	//printf("\n"); //fixes SetConsoleScreenBufferInfoEx
+	SetConsoleTextAttribute(hConsole, 7);
+
+
+	(SetConsoleScreenBufferInfoEx(hConsole, &info));
+}
+
+void SetColorRGB(char c, RGB rgb) {
+	//system("cls"); <-- clears console window
+
+	info.ColorTable[7] = RGB(rgb.r, rgb.g, rgb.b);
+
+	info.srWindow = SMALL_RECT(0, 0, 720, 720);
+	//info.dwSize = COORD(720, 720);
+
+	//std::cout << ""<<std::endl;
+	//printf("\n"); <-- this works...
+	//printf("\n"); //fixes SetConsoleScreenBufferInfoEx
+	SetConsoleTextAttribute(hConsole, 7);
+
+
+	(SetConsoleScreenBufferInfoEx(hConsole, &info));
+	
 }
 
 std::vector<std::vector<char>> linearText(std::vector<std::vector<RGBA>> pDat) { //avx goes burr
@@ -257,7 +298,7 @@ std::vector<std::vector<char>> linearTextRGB(std::vector<std::vector<RGB>> pDat)
 }
 
 
-void printCharList(std::vector<std::vector<char>> tcl) { // made for 2000x2000 ish
+void printCharList(std::vector<std::vector<char>> tcl, std::vector<std::vector<RGBA>> rgb) { // made for 2000x2000 ish
 
 	//get a divisor of x and y, since else we have too big! - not good for prime numbers
 
@@ -269,7 +310,7 @@ void printCharList(std::vector<std::vector<char>> tcl) { // made for 2000x2000 i
 
 	int truey = 1;
 
-	for (int i = 2; i < 36; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
+	for (int i = 2; i < 20; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
 
 		tmpyratio = ratioy % i;
 		tmpyratio2 = ratiox % i;
@@ -283,10 +324,22 @@ void printCharList(std::vector<std::vector<char>> tcl) { // made for 2000x2000 i
 	
 	ratiox = truey;
 
+	CFI.cbSize = sizeof(CFI);
+	CFI.nFont = 0;
+	CFI.dwFontSize.X = 200 / (ceil(ratiox*1.5));                   // Width of each character in the font
+	CFI.dwFontSize.Y = 200 / ((ratioy));                  // Height
+	CFI.FontFamily = FF_DONTCARE;
+	CFI.FontWeight = FW_NORMAL;
+	std::wcscpy(CFI.FaceName, L"Consolas"); // Choose your font
+	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
+
 
 	for (int i = 0; i < tcl.size(); i+= ratioy) {
-		for (int z = 0; z < tcl[0].size(); z+= ratiox) {
-			printf("%c ",tcl[i][z]);
+		for (int z = 0; z < tcl[0].size(); z += ratiox) {
+
+		//	SetColor(tcl[i][z], rgb[i][z]);
+			//WriteConsoleA(hConsole, (void*)&tcl[i][z],1,NULL, NULL);
+			printf("%c", tcl[i][z]);
 		}
 		printf("\n");
 
@@ -295,6 +348,54 @@ void printCharList(std::vector<std::vector<char>> tcl) { // made for 2000x2000 i
 
 }
 
+void printCharListRGB(std::vector<std::vector<char>> tcl, std::vector<std::vector<RGB>> rgb) { // made for 2000x2000 ish
+
+	//get a divisor of x and y, since else we have too big! - not good for prime numbers
+
+	int ratioy = tcl.size();
+	int ratiox = tcl[0].size();
+
+	int tmpyratio = 0;
+	int tmpyratio2 = 0;
+
+	int truey = 1;
+
+	for (int i = 2; i < 20; i++) { //optimised for 720p size - 1080p would work with 32 fairly well
+
+		tmpyratio = ratioy % i;
+		tmpyratio2 = ratiox % i;
+
+		if (tmpyratio % 1 == 0 && tmpyratio2 % 1 == 0) { //decimal checker -- too big if not these ratios
+			truey = i;
+		}
+	}
+
+	ratioy = truey;
+
+	ratiox = truey;
+
+	//
+	CFI.cbSize = sizeof(CFI);
+	CFI.nFont = 0;
+	CFI.dwFontSize.X = 200 /(ceil(ratiox * 1.5));                   // Width of each character in the font
+	CFI.dwFontSize.Y = 200 /((ratioy));                  // Height
+	CFI.FontFamily = FF_DONTCARE;
+	CFI.FontWeight = FW_NORMAL;
+	std::wcscpy(CFI.FaceName, L"Consolas"); // Choose your font
+	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
+
+
+	for (int i = 0; i < tcl.size(); i += ratioy) {
+		for (int z = 0; z < tcl[0].size(); z += ratiox) {
+		//	SetColorRGB(tcl[i][z], rgb[i][z]);
+			printf("%c", tcl[i][z]);
+		}
+		printf("\n");
+
+
+	}
+
+}
 void NOTVID() {
 
 	HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER,
@@ -324,7 +425,6 @@ void NOTVID() {
 	img.imgData.Y = 0;
 	img.imgData.Width = img.pixw;
 	img.imgData.Height = img.pixh;
-
 
 
 	img.frame->GetResolution(&img.resx, &img.resy);
@@ -378,7 +478,7 @@ void NOTVID() {
 
 	img.charArr = linearText(img.byteBufferProper);
 
-	printCharList(img.charArr);
+	printCharList(img.charArr, img.byteBufferProper);
 
 
 }
@@ -522,14 +622,28 @@ void loadManyImages() {
 	}
 	for (int z = 0; z < imgC; z++) {
 		
-		printCharList(ffmpeg.charArr[z]);
-		Sleep(100);
+		printCharListRGB(ffmpeg.charArr[z], ffmpeg.byteBufferProper[z]);
+
 		printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	}
 }
 
 int main() {
 	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD thing;
+	GetConsoleMode(hConsole, &thing);
+	
+	//SetConsoleMode(hConsole, thing | ENABLE_VIRTUAL_TERMINAL_PROCESSING | ENABLE_LVB_GRID_WORLDWIDE | ENABLE_VIRTUAL_TERMINAL_INPUT);
+	info.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);//ENABLE_VIRTUAL_TERMINAL_INPUT
+
+	info.dwSize = COORD(1, 0);
+
+	
+
+	GetConsoleScreenBufferInfoEx(hConsole, &info);
+
+
 	std::string a;
 	std::cout << "enter m for video worker; p for many images (already used ffmpeg)\n";
 	std::cin >> a;
