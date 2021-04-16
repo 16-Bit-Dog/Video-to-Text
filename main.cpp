@@ -3,7 +3,6 @@
 //Exists to do some thing I needed to be done
 //////////////////////
  
-// CREDIT to Tapio Vierros and his amazing console API named rlutil
 
 #pragma comment (lib, "windowscodecs.lib")
 
