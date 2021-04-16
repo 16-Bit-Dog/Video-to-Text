@@ -14,6 +14,8 @@
 #include <string>
 #define WIN32_LEAN_AND_MEAN 
 
+
+
 int GLOBALSCALE;
 HANDLE hConsole;
 CONSOLE_SCREEN_BUFFER_INFOEX info;
@@ -288,23 +290,25 @@ void printCharList(std::vector<std::vector<char>> tcl, std::vector<std::vector<R
 	}
 
 	ratioy = truey;
-	
+
 	ratiox = truey;
 
+	//
 	CFI.cbSize = sizeof(CFI);
 	CFI.nFont = 0;
-	CFI.dwFontSize.X = 200 / (ceil(ratiox*1.5));                   // Width of each character in the font
-	CFI.dwFontSize.Y = 200 / ((ratioy));                  // Height
+	CFI.dwFontSize.X = 200 / (ceil(ratiox * 2.5));                   // Width of each character in the font
+	CFI.dwFontSize.Y = 200 / ((ratioy * 2));                  // Height
 	CFI.FontFamily = FF_DONTCARE;
 	CFI.FontWeight = FW_NORMAL;
 	std::wcscpy(CFI.FaceName, L"Consolas"); // Choose your font
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
 
+
 	info.srWindow = SMALL_RECT(0, 0, 720, 720);
 	(SetConsoleScreenBufferInfoEx(hConsole, &info));
 
 
-//	int XMS;
+	//	int XMS;
 	for (int i = 0; i < tcl.size(); i += ratioy) {
 
 		for (int z = 0; z < tcl[0].size(); z += ratiox) {
@@ -313,7 +317,6 @@ void printCharList(std::vector<std::vector<char>> tcl, std::vector<std::vector<R
 		}
 		printf("\x1B[40m\n"); //\x1b[1B
 	}
-
 }
 
 void printCharListRGB(std::vector<std::vector<char>> tcl, std::vector<std::vector<RGB>> rgb) { // made for 2000x2000 ish
@@ -345,8 +348,8 @@ void printCharListRGB(std::vector<std::vector<char>> tcl, std::vector<std::vecto
 	//
 	CFI.cbSize = sizeof(CFI);
 	CFI.nFont = 0;
-	CFI.dwFontSize.X = 200 /(ceil(ratiox * 1.5));                   // Width of each character in the font
-	CFI.dwFontSize.Y = 200 /((ratioy));                  // Height
+	CFI.dwFontSize.X = 200 /(ceil(ratiox * 2.5));                   // Width of each character in the font
+	CFI.dwFontSize.Y = 200 /((ratioy*2));                  // Height
 	CFI.FontFamily = FF_DONTCARE;
 	CFI.FontWeight = FW_NORMAL;
 	std::wcscpy(CFI.FaceName, L"Consolas"); // Choose your font
@@ -361,7 +364,7 @@ void printCharListRGB(std::vector<std::vector<char>> tcl, std::vector<std::vecto
 	for (int i = 0; i < tcl.size(); i += ratioy) {
 
 		for (int z = 0; z < tcl[0].size(); z += ratiox) {
-
+			
 			printf("\x1B[48;5;%d;%d;%dm%c", rgb[i][z].r, rgb[i][z].g, rgb[i][z].b, tcl[i][z]);
 		}
 		printf("\x1B[40m\n"); //\x1b[1B
@@ -448,7 +451,7 @@ void NOTVID() {
 
 	//img.byteBufferProper = texManage(img.byteBufferProper);
 
-	std::cout << "\n one last thing; enter the scale for the video - 10 is VERY BIG, 15 is large (good for a 15inch 1080p screen laptop), 20 is the smallest I would make to render detail on a colored video";
+	std::cout << "\n one last thing; enter the scale for the video - 10 is VERY BIG, 15 is large (good for a 15inch 1080p screen laptop), 20 is the smallest I would make to render detail on a colored video: ";
 	std::cin >> GLOBALSCALE;
 
 	img.charArr = linearText(img.byteBufferProper);
@@ -518,7 +521,7 @@ void loadManyImages() {
 	ffmpeg.byteBufferProper.resize(imgC);
 	ffmpeg.charArr.resize(imgC);
 
-	std::cout << "\n one last thing; enter the scale for the video - 10 is VERY BIG, 15 is large (good for a 15inch 1080p screen laptop), 20 is the smallest I would make to render detail on a colored video";
+	std::cout << "\n one last thing; enter the scale for the video - 10 is VERY BIG, 15 is large (good for a 15inch 1080p screen laptop), 20 is the smallest I would make to render detail on a colored video: ";
 	std::cin >> GLOBALSCALE;
 
 	std::cout << "processing.\n";
@@ -602,7 +605,7 @@ void loadManyImages() {
 		
 		printCharListRGB(ffmpeg.charArr[z], ffmpeg.byteBufferProper[z]);
 
-		printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		system("CLS");
 	}
 }
 
