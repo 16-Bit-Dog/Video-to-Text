@@ -21,7 +21,7 @@ HANDLE hConsole;
 CONSOLE_SCREEN_BUFFER_INFOEX info;
 CONSOLE_FONT_INFOEX CFI;
 
-//program requries AVX because I felt like it may do something - need to test
+//program requries AVX because I felt like it may do something - need to test - heh TODO: add intrinsics so AVX is a thing, same for cuda -but have better stuff to do rn
 //requires CUDA enabled GPU - no idea what sm because still working on project
 
 //this is a rasterizer of a image program
